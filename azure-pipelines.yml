@@ -7,7 +7,7 @@ jobs:
 - job: BuildAndroid
   displayName: Build for Android
   pool:
-    vmImage: 'ubuntu-latest'
+    vmImage: 'windows-latest'
   steps:
   - task: FlutterInstall@0
     displayName: Install Flutter
