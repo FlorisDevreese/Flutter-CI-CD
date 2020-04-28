@@ -47,6 +47,15 @@ jobs:
   pool:
     vmImage: 'macOS-latest'
   steps:
+  - task: InstallAppleCertificate@2
+    inputs:
+      certSecureFile: 'distribution.p12'
+      certPwd: '$(distribution.p12-password)'
+      keychain: 'temp'
+  - task: InstallAppleProvisioningProfile@1
+    inputs:
+      provisioningProfileLocation: 'secureFiles'
+      provProfileSecureFile: 'Flutter_CI_CD__ad_hoc.mobileprovision'
   - task: FlutterInstall@0
     inputs:
       channel: 'stable'
