@@ -3,12 +3,27 @@ name: '1.0.$(Build.BuildId)'
 trigger:
 - master
 
+variables:
+- name: androidKeystoreKeyAlias
+  value: key
+
 jobs:
 - job: BuildAndroid
   displayName: Build for Android
   pool:
     vmImage: 'windows-latest'
   steps:
+  - task: DownloadSecureFile@1
+    displayName: get releaseKeyStore.jks
+    name: releaseKeyStore
+    inputs:
+      secureFile: 'releaseKeyStore.jks'
+  - pwsh: |
+      Write-Host "##vso[task.setvariable variable=keyAlias;]$(androidKeystoreKeyAlias)"
+      Write-Host "##vso[task.setvariable variable=keyPassword;]$(androidKeystoreKeyPassword)"
+      Write-Host "##vso[task.setvariable variable=storeFile;]$(releaseKeyStore.secureFilePath)"
+      Write-Host "##vso[task.setvariable variable=storePassword;]$(androidKeystorePassword)"
+    displayName: "set keystore environment variables"
   - task: FlutterInstall@0
     displayName: Install Flutter
     inputs:
