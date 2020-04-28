@@ -48,21 +48,46 @@ jobs:
     vmImage: 'macOS-latest'
   steps:
   - task: InstallAppleCertificate@2
+    displayName: Install Apple distribution certificate
     inputs:
       certSecureFile: 'distribution.p12'
       certPwd: '$(distribution.p12-password)'
       keychain: 'temp'
   - task: InstallAppleProvisioningProfile@1
+    displayName: Install ad-hoc distribution profile
     inputs:
       provisioningProfileLocation: 'secureFiles'
       provProfileSecureFile: 'Flutter_CI_CD__ad_hoc.mobileprovision'
   - task: FlutterInstall@0
+    displayName: Install Flutter
     inputs:
       channel: 'stable'
       version: 'latest'
   - task: FlutterBuild@0
+    displayName: Build app
     inputs:
       target: 'ios'
       projectDirectory: '.'
       buildName: '$(Build.BuildNumber)'
       iosCodesign: false
+  - task: Xcode@5
+    displayName: Package and sign app
+    inputs:
+      actions: 'build'
+      configuration: 'Release'
+      sdk: 'iphoneos'
+      xcWorkspacePath: 'ios/Runner.xcworkspace'
+      scheme: 'Runner'
+      packageApp: true
+      exportPath: '$(System.ArtifactsDirectory)'
+      exportOptions: 'plist'
+      exportOptionsPlist: 'ios/exportOptions.plist'
+      signingOption: 'manual'
+      signingIdentity: '$(APPLE_CERTIFICATE_SIGNING_IDENTITY)'
+      provisioningProfileUuid: '$(APPLE_PROV_PROFILE_UUID)'
+  - task: PublishBuildArtifacts@1
+    displayName: Publish artifact
+    inputs:
+      PathtoPublish: '$(System.ArtifactsDirectory)'
+      ArtifactName: 'ios'
+      publishLocation: 'Container'
