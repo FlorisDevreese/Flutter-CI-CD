@@ -1,6 +1,6 @@
 # Flutter CI/CD pipeline template
 
-**Note:** work in progress... 😏
+**Note:** Continious Delivery has not been integrated yet into the pipeline. 😏
 
 [![Build Status](https://dev.azure.com/florisdevreese/Flutter-CI-CD/_apis/build/status/FlorisDevreese.Flutter-CI-CD?branchName=master)](https://dev.azure.com/florisdevreese/Flutter-CI-CD/_build/latest?definitionId=8&branchName=master)
 
