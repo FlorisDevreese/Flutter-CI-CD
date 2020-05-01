@@ -26,14 +26,14 @@ Both the Android pipeline and the IOS pipeline are encapsulated into one [`azure
     - **Note:** I encounter [this issue](#1.-Flutter-installation-fails-on-Ubuntu-agent)
 4. Add signing to the android build
     - Create a keystore. See [here how](https://flutter.dev/docs/deployment/android#create-a-keystore)
-    - add the keystore file to [Azure DevOps Secure Files](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/secure-files?view=azure-devops) library (I called the keystore file `releaseKeyStore.jks`)
-    - adjust the pipeline ([see changes here](https://github.com/FlorisDevreese/Flutter-CI-CD/commit/35a112ab3b4572d06cdbb28bd61399a5e4a33434))
+    - Add the keystore file to [Azure DevOps Secure Files](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/secure-files?view=azure-devops) library (I called the keystore file `releaseKeyStore.jks`)
+    - Adjust the pipeline ([see changes here](https://github.com/FlorisDevreese/Flutter-CI-CD/commit/35a112ab3b4572d06cdbb28bd61399a5e4a33434))
         - Add variables to the pipeline.
             - **Note:** the passwords are saved as secret variables
         - Add a step to download the `releaseKeyStore.jks` secure file
         - Add step to set environment variables. These environment variables are used in the signing process
     - Edit build.gradle file to include signing when release building.
-        - [see changes here](https://github.com/FlorisDevreese/Flutter-CI-CD/commit/9233630cd5761185a4c2849e5e46b1b2621c4175)
+        - [See changes here](https://github.com/FlorisDevreese/Flutter-CI-CD/commit/9233630cd5761185a4c2849e5e46b1b2621c4175)
 
 ## 2. Setting up the IOS CI build
 
@@ -84,27 +84,28 @@ Both the Android pipeline and the IOS pipeline are encapsulated into one [`azure
 
 ## 3. Setting up CD for the Android package
 
-For the distribution of the app I choose to work with [Firebase](https://firebase.google.com/). There is no particular reason why I use Firebase, you can also use [AppCenter](https://appcenter.ms/sign-in?original_url=%2Fapps) for example.
+For the distribution of the app to the testers I choose to work with [Firebase](https://firebase.google.com/). There is no particular reason why I use Firebase, you can also use [AppCenter](https://appcenter.ms/sign-in?original_url=%2Fapps) for example.
 
 First you'll need to do some manual steps before we can setup the automatic CD pipeline.
 
 1. Create an account on [Firebase](https://firebase.google.com/)
 2. Create a new project inside the Firebase console
 3. Add an android app to your newly created project
-    - not sure about steps below
     - For just the distribution functionality, you only need to register your packageID (`com.example.cicdtemplate`). You can skip the other steps.
-4. The CI build created artifacts. One of those artifacts is `apk/app-release.apk`. Download that artifact to your device and upload it to App Distribution tab in Firebase
+4. Go to the distribution tab
+    - Make sure you select the android app
+5. The CI build created artifacts. One of those artifacts is `apk/app-release.apk`. Download that artifact to your device and upload it to App Distribution tab in Firebase
     - This will create a new release
     - Add testers to the release (e.g. your own email)
     - Next add some release notes
     - Next click Distribute
-5. You should now receive an email with instruction how to install the application on your device
-6. Follow those instructions on an Android device, and you should be able to run the application
+6. You should now receive an email with instruction how to install the application on your device
+7. Follow those instructions on an Android device, and you should be able to run the application
     - **Note:** Appearently I forgot something because I can't install the application on my Android device. Give me some time to figure this out
 
 Next we'll setup the CD pipeline. This so we can automatically push a new version of the app to our testers.
 
-1. **Todo**
+**Todo:** provide a CD pipeline
 
 ## 4. Setting up CD for the IOS package
 
@@ -113,7 +114,7 @@ Manual steps
 1. Add a new IOS app in the same Firebase project you created for Android
     - For just the distribution functionality, you only need to register your packageID (`com.example.cicdtemplate`). You can skip the other steps.
 2. Go to the distribution tab
-    - make sure you select the ios app
+    - Make sure you select the ios app
 3. The CI build created artifacts. One of those artifacts is `ios/Runner.ipa`. Download that artifact to your device and upload it to App Distribution tab in Firebase
     - This will create a new release
     - Add testers to the release (e.g. your own email)
@@ -126,7 +127,7 @@ Manual steps
 
 Next we'll setup the CD pipeline. This so we can automatically push a new version of the app to our testers.
 
-1. **todo**
+**Todo:** provide a CD pipeline
 
 ## Problems I encountered
 
