@@ -33,7 +33,7 @@ Both the Android pipeline and the IOS pipeline are encapsulated into one [`azure
         - Add a step to download the `releaseKeyStore.jks` secure file
         - Add step to set environment variables. These environment variables are used in the signing process
     - Edit build.gradle file to include signing when release building.
-        - [see the edits here](https://github.com/FlorisDevreese/Flutter-CI-CD/commit/9233630cd5761185a4c2849e5e46b1b2621c4175)
+        - [see changes here](https://github.com/FlorisDevreese/Flutter-CI-CD/commit/9233630cd5761185a4c2849e5e46b1b2621c4175)
 
 ## 2. Setting up the IOS CI build
 
