@@ -6,8 +6,9 @@
 
 This project has the following goals:
 - Setup a CI/CD pipeline for a flutter app that builds an Android and an IOS app
-- Show that you can build the IOS app without a physical macOS device
+- Show that you can build the IOS app **without** a physical macOS device
 - Provide inspiration/templates for setting up CI/CD pipelines for your flutter project
+- Show how to link your app to Firebase
 
 This project uses the following technologies:
 - Azure DevOps for setting up the pipelines
@@ -23,7 +24,6 @@ Both the Android pipeline and the IOS pipeline are encapsulated into one [`azure
 2. Install this [Azure DevOps Flutter extension](https://marketplace.visualstudio.com/items?itemName=aloisdeniel.flutter) on my Azure DevOps project
 3. Create a simple new Azure DevOps build pipeline for the android build. This pipeline doens't yet include signing
     - See [this the early version of the pipeline](https://github.com/FlorisDevreese/Flutter-CI-CD/commit/5361300046d5537c8f279a73b10eb3bf3b7f2aab)
-    - **Note:** I encounter [this issue](#1.-Flutter-installation-fails-on-Ubuntu-agent)
 4. Add signing to the android build
     - Create a keystore. See [here how](https://flutter.dev/docs/deployment/android#create-a-keystore)
     - Add the keystore file to [Azure DevOps Secure Files](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/secure-files?view=azure-devops) library (I called the keystore file `releaseKeyStore.jks`)
@@ -82,63 +82,89 @@ Both the Android pipeline and the IOS pipeline are encapsulated into one [`azure
     - Add `XCode` step to pipeline
     - Add `PublishBuildArtifacts` step to pipeline
 
-## 3. Setting up CD for the Android package
+## 3. Link app with Firebase
 
-For the distribution of the app to the testers I choose to work with [Firebase](https://firebase.google.com/). There is no particular reason why I use Firebase, you can also use [AppCenter](https://appcenter.ms/sign-in?original_url=%2Fapps) for example.
-
-First you'll need to do some manual steps before we can setup the automatic CD pipeline.
+Do this steps to link your app with [Firebase](https://firebase.google.com/). All code changes for these steps are visible in [this commit](https://github.com/FlorisDevreese/Flutter-CI-CD/commit/27fe199ec4e5d5c6fc196cab2816d9e49ea957f9).
 
 1. Create an account on [Firebase](https://firebase.google.com/)
 2. Create a new project inside the Firebase console
-3. Add an android app to your newly created project
-    - For just the distribution functionality, you only need to register your packageID (`com.example.cicdtemplate`). You can skip the other steps.
-4. Go to the distribution tab
+3. Add an android app in your Firebase project
+    - Follow the setup wizard
+        - Add `google-services.json` to the `android/app/` folder
+        - make changes to `android\build.gradle` and `android\app\build.gradle`
+4. Add an IOS app in your Firebase project
+    - Follow the setup wizard
+        - Add `GoogleService-Info.plist` to the `ios/Runner/` folder
+            - **Note:** If you do not run this from `XCode`, then be sure to include `GoogleService-Info.plist` to the `Runner` target inside `project.pbxproj`
+                - This can be done by manually editing the `ios/Runner.xcodeproj/project.pbxproj` file as seen in [this commit](https://github.com/FlorisDevreese/Flutter-CI-CD/commit/27fe199ec4e5d5c6fc196cab2816d9e49ea957f9#diff-38c5d0dde42025b924ea1bc746fb2cca)
+                - If you don't do this your app will crash on startup with this error
+                    ```log
+                    Could not locate configuration file: 'GoogleService-Info.plist'.
+                    ```
+                - **FYI:** I used [iTools](https://stackoverflow.com/a/26401867/3506115) for getting IOS logging on Windows 😉
+        - You can skip the *Add Firebase SDK* step
+            - I'm not sure, but it seems this is not needed with flutter
+        - You can skip the *Add initialization code* step
+            - I'm not sure, but it seems this is not needed with flutter
+    - Edit `ios/Podfile` so you don't encounter [this build error](https://stackoverflow.com/q/59196199/3506115)
+        ```log
+        error: FirebaseCoreDiagnostics does not support provisioning profiles. FirebaseCoreDiagnostics does not support provisioning profiles, but provisioning profile Flutter_CI_CD__ad_hoc has been manually specified. Set the provisioning profile value to "Automatic" in the build settings editor. (in target 'FirebaseCoreDiagnostics' from project 'Pods')
+        ```
+        - Apply [this fix](https://stackoverflow.com/a/59206937/3506115)
+        - **Note:** `ios/Podfile` will only be created once you run `flutter build ios`. If you don't have a `macOS` device you can get the created `Podfile` from your build pipeline as an artifact. You'll have to add this step to your pipeline, and the created `Podfile` will be available as an artifact of your build.
+            ```yml
+            - task: PublishBuildArtifacts@1
+            displayName: Publish artifact
+            inputs:
+                PathtoPublish: '$(Build.SourcesDirectory)/ios/Podfile'
+                ArtifactName: 'Podfile'
+                publishLocation: 'Container'
+            ````
+5. Add the following dependencies to `pubspec.yml`
+    ```yml
+    firebase_core: ^0.4.4+3
+    firebase_analytics: ^5.0.11
+    ```
+
+### Securing secrets
+
+todo
+
+## 4. Setting up CD for the Android package
+
+First you'll need to do some manual steps before we can setup the automatic CD pipeline.
+
+1. In your [Firebase](https://firebase.google.com/) project go to the distribution tab
     - Make sure you select the android app
-5. The CI build created artifacts. One of those artifacts is `apk/app-release.apk`. Download that artifact to your device and upload it to App Distribution tab in Firebase
+2. The CI build created artifacts. One of those artifacts is `apk/app-release.apk`. Download that artifact to your device and upload it to App Distribution tab in Firebase
     - This will create a new release
     - Add testers to the release (e.g. your own email)
     - Next add some release notes
     - Next click Distribute
-6. You should now receive an email with instruction how to install the application on your device
-7. Follow those instructions on an Android device, and you should be able to run the application
+3. You should now receive an email with instruction how to install the application on your device
+4. Follow those instructions on an Android device, and you should be able to run the application
     - **Note:** Appearently I forgot something because I can't install the application on my Android device. Give me some time to figure this out
 
 Next we'll setup the CD pipeline. This so we can automatically push a new version of the app to our testers.
 
 **Todo:** provide a CD pipeline
 
-## 4. Setting up CD for the IOS package
+## 5. Setting up CD for the IOS package
 
 Manual steps
 
-1. Add a new IOS app in the same Firebase project you created for Android
-    - For just the distribution functionality, you only need to register your packageID (`com.example.cicdtemplate`). You can skip the other steps.
-2. Go to the distribution tab
+1. In your [Firebase](https://firebase.google.com/) project go to the distribution tab
     - Make sure you select the ios app
-3. The CI build created artifacts. One of those artifacts is `ios/Runner.ipa`. Download that artifact to your device and upload it to App Distribution tab in Firebase
+2. The build created artifacts. One of those artifacts is `ios/Runner.ipa`. Download that artifact to your device and upload it to App Distribution tab in Firebase
     - This will create a new release
     - Add testers to the release (e.g. your own email)
     - Next add some release notes
     - Next click Distribute
-4. You should now receive an email with instruction how to install the application on your device
-5. Open that email on the ios device that you have registered in the [Apple developer console](https://developer.apple.com/account/resources/devices/list), and that you have added to the distribution profile
+3. You should now receive an email with instruction how to install the application on your device
+4. Open that email on the ios device that you have registered in the [Apple developer console](https://developer.apple.com/account/resources/devices/list), and that you have added to the distribution profile
     - **Note:** the app will only work on the registered devices in your provisioning profile
     - **Note:** follow [these instructions](https://firebase.google.com/docs/app-distribution/ios/distribute-cli#step-3.-register-additional-tester-devices) if you want to add ios test devices 
 
 Next we'll setup the CD pipeline. This so we can automatically push a new version of the app to our testers.
 
 **Todo:** provide a CD pipeline
-
-## Problems I encountered
-
-Here's a list of all the inconvencies I encounter while setting up this project
-
-### 1. Flutter installation fails on Ubuntu agent
-[This error](https://dev.azure.com/florisdevreese/Flutter-CI-CD/_build/results?buildId=177&view=logs&j=d8c010d3-91c2-546a-b1cf-ee2cd3c34608&t=fc1891f0-4456-57de-7f19-2aff778a973a&l=16) occurs when you try to install flutter on a Ubuntu agent in your pipeline.
-```log
-Downloading: https://storage.googleapis.com/flutter_infra/releases/stable/linux/flutter_linux_v1.12.13+hotfix.9-stable.zip
-##[error]Error: Unexpected HTTP response: 404
-```
-This is a [bug](https://github.com/aloisdeniel/vsts-flutter-tasks/issues/14) in the Flutter extension. A work around is running the build on a windows, or macOS agent instead of on an ubuntu agent. [See workaround here](https://github.com/FlorisDevreese/Flutter-CI-CD/commit/89b9ce3d52879babb0bf9b62fac1021fb6feda49).
-
-**Note:** this bug was encountered on 26/04/2020.
