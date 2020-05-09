@@ -1,4 +1,4 @@
-package com.example.ci_cd_template
+package com.example.ciCdTemplate
 
 import androidx.annotation.NonNull;
 import io.flutter.embedding.android.FlutterActivity
