@@ -30,7 +30,7 @@ jobs:
     inputs:
       secureFile: 'google-services.json'
   - pwsh: Move-Item $(googleServicesJson.secureFilePath) android/app/ -Force
-    displayName: Move google-services.json to android/app/
+    displayName: Override google-services.json
   - task: FlutterInstall@0
     displayName: Install Flutter
     inputs:
@@ -71,7 +71,7 @@ jobs:
     inputs:
       secureFile: 'GoogleService-Info.plist'
   - pwsh: Move-Item $(googleServicesInfoPlist.secureFilePath) ios/Runner/ -Force
-    displayName: Move GoogleService-Info.plist to ios/Runner/
+    displayName: Override GoogleService-Info.plist
   - task: FlutterInstall@0
     displayName: Install Flutter
     inputs:

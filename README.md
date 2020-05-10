@@ -129,7 +129,9 @@ Do this steps to link your app with [Firebase](https://firebase.google.com/). Al
 
 ### Securing secrets
 
-The `google-services.json` and `GoogleService-Info.plist` committed with your source code should be of an `development` or `local` environment. In the build pipeline you should override these files with the configuration of a `test` environment. This way you keep your data/diagnostics/crashReports seperated. To achive this I've added the `google-services.json` and `GoogleService-Info.plist` files of my test environment of Firebase (a new Firebase project) to the secure files in [Azure pipelines](https://dev.azure.com/florisdevreese/Flutter-CI-CD/_library?itemType=SecureFiles). Now at build time I override the `google-services.json` and `GoogleService-Info.plist` of my source code with the ones of my test environment. [See changes here](https://github.com/FlorisDevreese/Flutter-CI-CD/commit/fff66145b2f630f3ef6ba89b38bc9c1010dc07fb).
+The `google-services.json` and `GoogleService-Info.plist` committed with your source code should be of an `development` or `local` environment. In the build pipeline you should override these files with the configuration of a `test` environment. This way you keep your data/diagnostics/crashReports seperated.
+
+To achive this I've added the `google-services.json` and `GoogleService-Info.plist` files of my test environment of Firebase (= a new Firebase project) to the secure files in [Azure pipelines](https://dev.azure.com/florisdevreese/Flutter-CI-CD/_library?itemType=SecureFiles). Now at build time I override the `google-services.json` and `GoogleService-Info.plist` of my source code with those of my test environment. [See changes here](https://github.com/FlorisDevreese/Flutter-CI-CD/commit/fff66145b2f630f3ef6ba89b38bc9c1010dc07fb).
 
 ## 4. Setting up CD for the Android package
 
