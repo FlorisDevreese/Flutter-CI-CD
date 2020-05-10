@@ -14,7 +14,7 @@ jobs:
     vmImage: 'windows-latest'
   steps:
   - task: DownloadSecureFile@1
-    displayName: get releaseKeyStore.jks
+    displayName: Get releaseKeyStore.jks
     name: releaseKeyStore
     inputs:
       secureFile: 'releaseKeyStore.jks'
@@ -24,6 +24,13 @@ jobs:
       Write-Host "##vso[task.setvariable variable=storeFile;]$(releaseKeyStore.secureFilePath)"
       Write-Host "##vso[task.setvariable variable=storePassword;]$(androidKeystorePassword)"
     displayName: "set keystore environment variables"
+  - task: DownloadSecureFile@1
+    displayName: Get google-services.json
+    name: googleServicesJson
+    inputs:
+      secureFile: 'google-services.json'
+  - pwsh: Move-Item $(googleServicesJson.secureFilePath) android/app/
+    displayName: Move google-services.json to android/app/
   - task: FlutterInstall@0
     displayName: Install Flutter
     inputs:
@@ -58,6 +65,13 @@ jobs:
     inputs:
       provisioningProfileLocation: 'secureFiles'
       provProfileSecureFile: 'Flutter_CI_CD__ad_hoc.mobileprovision'
+  - task: DownloadSecureFile@1
+    displayName: Get GoogleService-Info.plist
+    name: googleServicesInfoPlist
+    inputs:
+      secureFile: 'GoogleService-Info.plist'
+  - pwsh: Move-Item $(googleServicesInfoPlist.secureFilePath) ios/Runner/
+    displayName: Move GoogleService-Info.plist to ios/Runner/
   - task: FlutterInstall@0
     displayName: Install Flutter
     inputs:
