@@ -12,9 +12,11 @@ This project has the following goals:
 
 This project uses the following technologies:
 - Azure DevOps for setting up the pipelines
-- Google Firebase to do the app distribution to the testers
+- Google Firebase to do the app distribution
 
-This project starts from the basic *create new Flutter project* project. There is no extra functionallity added to the app. This only thing added to this project is a CI/CD pipeline for the basic Flutter app.
+This project starts from the basic *create new Flutter project* project. There is no extra functionallity added to the app. This only thing added are:
+- a CI/CD pipeline
+- link with Firebase
 
 Both the Android pipeline and the IOS pipeline are encapsulated into one [`azure-pipelines.yml`](./azure-pipelines.yml) file. What follows is a chronological explenation of all the steps I undertook to create the whole pipeline.
 
