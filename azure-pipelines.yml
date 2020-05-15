@@ -11,7 +11,7 @@ jobs:
 - job: BuildAndroid
   displayName: Build for Android
   pool:
-    vmImage: 'windows-latest'
+    vmImage: 'ubuntu-latest'
   steps:
   - task: DownloadSecureFile@1
     displayName: Get releaseKeyStore.jks
