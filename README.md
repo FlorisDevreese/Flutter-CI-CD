@@ -91,9 +91,7 @@ Do this steps to link your app with [Firebase](https://firebase.google.com/). Al
 1. Create an account on [Firebase](https://firebase.google.com/)
 2. Create a new project inside the Firebase console
 3. Add an android app in your Firebase project
-    - Follow the setup wizard
-        - Add `google-services.json` to the `android/app/` folder
-        - make changes to `android\build.gradle` and `android\app\build.gradle`
+    - Follow [this](https://firebase.google.com/docs/flutter/setup?platform=android) setup wizard
 4. Add an IOS app in your Firebase project
     - Follow the setup wizard
         - Add `GoogleService-Info.plist` to the `ios/Runner/` folder
